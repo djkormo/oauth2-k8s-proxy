@@ -16,9 +16,9 @@ COPY . .
 
 # Arguments go here so that the previous steps can be cached if no external
 #  sources have changed.
-ARG VERSION
-ARG TARGETPLATFORM
-ARG BUILDPLATFORM
+ARG VERSION=0.1.0
+ARG TARGETPLATFORM=linux/amd64
+ARG BUILDPLATFORM=linux/amd64
 
 # Build binary and make sure there is at least an empty key file.
 #  This is useful for GCP App Engine custom runtime builds, because
@@ -28,24 +28,27 @@ ARG BUILDPLATFORM
 #  in app.yaml instead.
 # Set the cross compilation arguments based on the TARGETPLATFORM which is
 #  automatically set by the docker engine.
-RUN case ${TARGETPLATFORM} in \
-         "linux/amd64")  GOARCH=amd64  ;; \
-         "linux/arm64")  GOARCH=arm64  ;; \
-         "linux/ppc64le")  GOARCH=ppc64le  ;; \
-         "linux/arm/v6") GOARCH=arm GOARM=6  ;; \
-    esac && \
-    printf "Building OAuth2 Proxy for arch ${GOARCH}\n" && \
-    GOARCH=${GOARCH} VERSION=${VERSION} make build && touch jwt_signing_key.pem
+
+#RUN case ${TARGETPLATFORM} in \
+#         "linux/amd64")  GOARCH=amd64  ;; \
+#         "linux/arm64")  GOARCH=arm64  ;; \
+#         "linux/ppc64le")  GOARCH=ppc64le  ;; \
+#         "linux/arm/v6") GOARCH=arm GOARM=6  ;; \
+#    esac && \
+#    printf "Building OAuth2 Proxy for arch ${GOARCH}\n" && \
+#    GOARCH=${GOARCH} VERSION=${VERSION} make build && touch jwt_signing_key.pem
+
+RUN make build
 
 # Copy binary to alpine
 FROM alpine:3.15
 COPY nsswitch.conf /etc/nsswitch.conf
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/oauth2-proxy /bin/oauth2-proxy
-COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/jwt_signing_key.pem /etc/ssl/private/jwt_signing_key.pem
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/oauth2-k8s-proxy /bin/oauth2-k8s-proxy
+#COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/jwt_signing_key.pem /etc/ssl/private/jwt_signing_key.pem
 
 USER 2000:2000
 
-ENTRYPOINT ["/bin/oauth2-proxy"]
+ENTRYPOINT ["/bin/oauth2-k8s-proxy"]
 
 
