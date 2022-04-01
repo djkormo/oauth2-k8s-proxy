@@ -7,7 +7,6 @@ on:
       - 'pkg/**.go'
       - 'contrib/*.go'
       - '**.go'
-      - '**.go'
       - 'Dockerfile'
 
 jobs:
@@ -22,7 +21,7 @@ jobs:
     - uses: actions/checkout@v2
       name: Checkout
       with:
-        ref: master
+        ref: docker/metadata-action
       
     - name: Docker meta
       id: meta
@@ -60,7 +59,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: djkormo/oauth2-k8s-proxy:master
+        image-ref: djkormo/oauth2-k8s-proxy:main
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
