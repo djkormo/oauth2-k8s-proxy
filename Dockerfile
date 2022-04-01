@@ -52,3 +52,4 @@ USER 2000:2000
 ENTRYPOINT ["/bin/oauth2-k8s-proxy"]
 
 
+
