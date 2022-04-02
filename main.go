@@ -16,8 +16,52 @@ import (
 	"golang.org/x/oauth2"
 )
 
+
+type User struct {
+	// Id    string   `json:"sub"`
+	Name  string   `json:"name"`
+	Email string   `json:"unique_name"` // unique_name, upn
+	Roles []string `json:"roles`
+}
+
+func randString(nByte int) (string, error) {
+	b := make([]byte, nByte)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value, domain string, ttl int) {
+	c := &http.Cookie{
+		Name:     name,
+		Value:    value,
+		Domain:   domain,
+		MaxAge:   ttl,
+		Secure:   r.TLS != nil,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, c)
+}
+
+// healthz is a liveness probe.
+func healthzHandler(w http.ResponseWriter, _ *http.Request) {
+	log.Println("Liveness probe: Ok")
+	w.WriteHeader(http.StatusOK)
+}
+// readyz is a readiness probe.
+func readyzHandler(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(time.Duration((1)) * time.Second)
+	log.Println("Readiness probe: Ok")
+	fmt.Fprintf(w, "ok")
+	}
+
+ 
+// proxy logic starts here
+
 func main() {
 
+	
 	clientId,ok := os.LookupEnv("CLIENT_ID")
 	if !ok {
 		log.Fatal("CLIENT_ID is not set")
@@ -84,11 +128,12 @@ func main() {
 	}
 
     //  for liveness probe in Kubernetes
-	http.HandleFunc("/healthz", healthz)
+	http.HandleFunc("/healthz", healthzHandler)
+
     //  for readiness probe in Kubernetes
-    http.HandleFunc("/readyz", readyz)
+    http.HandleFunc("/readyz", readyzHandler)
 
-
+    // root function 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("id_token")
 		if err != nil {
@@ -117,6 +162,7 @@ func main() {
 		w.Write(data)
 	})
 
+	// check function 
 	http.HandleFunc("/check", func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("id_token")
 		if err != nil {
@@ -139,6 +185,7 @@ func main() {
 		fmt.Fprintf(w, "OK")
 	})
 
+    // login function
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		rd := r.URL.Query().Get("rd")
 		if rd == "" {
@@ -172,7 +219,8 @@ func main() {
 		log.Println("login handler, redirecting to: " + url)
 		http.Redirect(w, r, url, http.StatusFound)
 	})
-
+    
+	// callback function 
 	http.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		state, err := r.Cookie("state")
 		if err != nil {
@@ -241,6 +289,7 @@ func main() {
 		http.Redirect(w, r, rd.Value, http.StatusFound)
 	})
 
+	// logout function 
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		setCallbackCookie(w, r, "id_token", "", cookieDomain, 0)
 
@@ -252,44 +301,6 @@ func main() {
 		http.Redirect(w, r, rd, http.StatusFound)
 	})
 
-	log.Println("listening on http://0.0.0.0"+port)
+	log.Println("listening on http://0.0.0.0:"+port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s",port), nil))
 }
-
-type User struct {
-	// Id    string   `json:"sub"`
-	Name  string   `json:"name"`
-	Email string   `json:"unique_name"` // unique_name, upn
-	Roles []string `json:"roles`
-}
-
-func randString(nByte int) (string, error) {
-	b := make([]byte, nByte)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return "", err
-	}
-	return base64.RawURLEncoding.EncodeToString(b), nil
-}
-
-func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value, domain string, ttl int) {
-	c := &http.Cookie{
-		Name:     name,
-		Value:    value,
-		Domain:   domain,
-		MaxAge:   ttl,
-		Secure:   r.TLS != nil,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, c)
-}
-
-// healthz is a liveness probe.
-func healthz(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusOK)
-}
-func readyz(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(time.Duration((5)) * time.Second)
-	fmt.Fprintf(w, "ok")
-	}
-
-
