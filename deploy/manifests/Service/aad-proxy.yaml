@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aad-proxy
+  namespace: proxy
+spec:
+  ports:
+  - name: aad-proxy
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: aad-proxy
+  type: ClusterIP

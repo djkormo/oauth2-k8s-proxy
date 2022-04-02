@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: aad-proxy
+  name: aad-proxy
+  namespace: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aad-proxy
+  template:
+    metadata:
+      labels:
+        app: aad-proxy
+    spec:
+      containers:
+      - env:
+        - name: AAD_CLIENT_ID
+          value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - name: AAD_CLIENT_SECRET
+          value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        - name: AAD_TENANT_ID
+          value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        - name: AAD_CALLBACK_URL
+          value: https://oauth2-k8s-proxy.djkormo.github.com/callback
+        - name: AAD_COOKIE_DOMAIN
+          value: .djkormo.github.com
+        image: djkormo/oauth2-k8s-proxy:main
+        name: aad-proxy
+        ports:
+        - containerPort: 8080
+          name: aad-proxy

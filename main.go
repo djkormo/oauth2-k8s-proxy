@@ -17,15 +17,44 @@ import (
 )
 
 func main() {
-	clientId := os.Getenv("AAD_CLIEN_ID")
-	clientSecret := os.Getenv("AAD_CLIEN_SECRET")
-	tenantId := os.Getenv("AAD_TENANT_ID")
-	callbackUrl := os.Getenv("AAD_CALLBACK_URL")
-	cookieDomain := os.Getenv("AAD_COOKIE_DOMAIN")
+  clientId,ok := os.LookupEnv("AAD_CLIENT_ID")
+
+  if !ok {
+    log.Println("AAD_CLIENT_ID is not present")
+  } else {
+    log.Printf("AAD_CLIENT_ID: %v\n", clientId)
+  }
+
+  clientSecret, ok := os.LookupEnv("AAD_CLIENT_SECRET")
+  if !ok {
+    log.Println("AAD_CLIENT_SECRET is not present")
+  } else {
+    log.Printf("AAD_CLIENT_SECRET: %v\n", clientSecret)
+  }
+
+  tenantId,ok := os.LookupEnv("AAD_TENANT_ID")
+  if !ok {
+    log.Println("AAD_TENANT_ID is not present")
+  } else {
+    log.Printf("AAD_TENANT_ID: %v\n", tenantId)
+  }
+  callbackUrl,ok := os.LookupEnv("AAD_CALLBACK_URL")
+  if !ok {
+    log.Println("AAD_CALLBACK_URL is not present")
+  } else {
+    log.Printf("AAD_CALLBACK_URL: %v\n", callbackUrl)
+  }
+  cookieDomain,ok := os.LookupEnv("AAD_COOKIE_DOMAIN")
+  if !ok {
+    log.Println("AAD_COOKIE_DOMAIN is not present")
+  } else {
+    log.Printf("AAD_COOKIE_DOMAIN: %v\n", cookieDomain)
+  }
 
 	ctx := context.Background()
+	issuser_uri:=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
 
-	provider, err := oidc.NewProvider(ctx, fmt.Sprintf("https://sts.windows.net/%s/", tenantId))
+	provider, err := oidc.NewProvider(ctx, issuser_uri)
 	if err != nil {
 		log.Fatal(err)
 	}
