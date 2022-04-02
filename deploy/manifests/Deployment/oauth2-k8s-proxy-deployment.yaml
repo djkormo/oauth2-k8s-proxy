@@ -25,6 +25,14 @@ spec:
         ports:
         - containerPort: 8080
           name: proxy
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
         resources:
           requests:
             memory: "64Mi"
@@ -32,8 +40,15 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"  
+
         securityContext:
-          runAsNonRoot: true
-          readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - all
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          
+      restartPolicy: Always  
   

@@ -14,46 +14,48 @@ import (
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
+//	"github.com/alexliesenfeld/health"
 )
 
 func main() {
-  clientId,ok := os.LookupEnv("CLIENT_ID")
 
-  if !ok {
-	log.Fatal("CLIENT_ID is not set")
-  } else {
-    log.Printf("CLIENT_ID: %v\n", clientId)
-  }
+	clientId,ok := os.LookupEnv("CLIENT_ID")
+	if !ok {
+		log.Fatal("CLIENT_ID is not set")
+	} else {
+		log.Printf("CLIENT_ID: %v\n", clientId)
+	}
 
-  clientSecret, ok := os.LookupEnv("CLIENT_SECRET")
-  if !ok {
-    log.Fatal("CLIENT_SECRET is not set")
-  } else {
-    log.Printf("CLIENT_SECRET: %v\n", clientSecret)
-  }
+	clientSecret, ok := os.LookupEnv("CLIENT_SECRET")
+	if !ok {
+		log.Fatal("CLIENT_SECRET is not set")
+	} else {
+		log.Printf("CLIENT_SECRET: %v\n", clientSecret)
+	}
 
-  tenantId,ok := os.LookupEnv("TENANT_ID")
-  if !ok {
-    log.Fatal("TENANT_ID is not present")
-  } else {
-    log.Printf("TENANT_ID: %v\n", tenantId)
-  }
+	tenantId,ok := os.LookupEnv("TENANT_ID")
+	if !ok {
+		log.Fatal("TENANT_ID is not present")
+	} else {
+		log.Printf("TENANT_ID: %v\n", tenantId)
+	}
 
-  callbackUrl,ok := os.LookupEnv("CALLBACK_URL")
-  if !ok {
-    log.Fatal("CALLBACK_URL is not present")
-  } else {
-    log.Printf("CALLBACK_URL: %v\n", callbackUrl)
-  }
+	callbackUrl,ok := os.LookupEnv("CALLBACK_URL")
+	if !ok {
+		log.Fatal("CALLBACK_URL is not present")
+	} else {
+		log.Printf("CALLBACK_URL: %v\n", callbackUrl)
+	}
 
-  cookieDomain,ok := os.LookupEnv("COOKIE_DOMAIN")
-  if !ok {
-    log.Fatal("COOKIE_DOMAIN is not present")
-  } else {
-    log.Printf("COOKIE_DOMAIN: %v\n", cookieDomain)
-  }
+	cookieDomain,ok := os.LookupEnv("COOKIE_DOMAIN")
+	if !ok {
+		log.Fatal("COOKIE_DOMAIN is not present")
+	} else {
+		log.Printf("COOKIE_DOMAIN: %v\n", cookieDomain)
+	}
 
 	ctx := context.Background()
+
 	// TODO make it more generic
 
 	issuser_uri:=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
@@ -73,6 +75,12 @@ func main() {
 		// TODO Scopes should be customized
 		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
 	}
+
+    //  for liveness probe in Kubernetes
+	http.HandleFunc("/healthz", healthz)
+    // TODO for readiness probe in Kubernetes
+   // http.HandleFunc("/readyz", readyz(isReady))
+
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("id_token")
@@ -268,3 +276,18 @@ func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value, doma
 	http.SetCookie(w, c)
 }
 
+// healthz is a liveness probe.
+func healthz(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
+// readyz is a readiness probe.
+// func readyz(isReady *atomic.Value) http.HandlerFunc {
+//	return func(w http.ResponseWriter, _ *http.Request) {
+//		if isReady == nil || !isReady.Load().(bool) {
+//			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
+//			return
+//		}
+//		w.WriteHeader(http.StatusOK)
+//	}
+//}
