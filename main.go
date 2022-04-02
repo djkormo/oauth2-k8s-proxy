@@ -39,7 +39,7 @@ func main() {
     log.Printf("TENANT_ID: %v\n", tenantId)
   }
 
-  callbackUrl,ok := os.LookupEnv("AAD_CALLBACK_URL")
+  callbackUrl,ok := os.LookupEnv("CALLBACK_URL")
   if !ok {
     log.Fatal("CALLBACK_URL is not present")
   } else {

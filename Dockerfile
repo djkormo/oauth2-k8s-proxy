@@ -3,27 +3,30 @@
 
 FROM  golang:1.18-buster AS builder
 
+
+WORKDIR /app
+
 # Copy sources
-WORKDIR $GOPATH/src/github.com/djkormo/oauth2-k8s-proxy
+COPY *.go ./
 
 # Fetch dependencies
 COPY go.mod go.sum ./
-
+# Download packages
 RUN go mod download
 
-# Now pull in our code
-COPY . .
+RUN go build  -o /oauth2-k8s-proxy
 
-RUN go build  -o oauth2-k8s-proxy
 # Copy binary to alpine
-FROM alpine:3.15
+
+#FROM alpine:3.15
+FROM gcr.io/distroless/base-debian10
 COPY nsswitch.conf /etc/nsswitch.conf
 
-COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy /bin/oauth2-k8s-proxy
+COPY --from=builder /oauth2-k8s-proxy /oauth2-k8s-proxy
 
+EXPOSE 8080
 USER 2000:2000
-
-ENTRYPOINT ["/bin/oauth2-k8s-proxy"]
+ENTRYPOINT ["/oauth2-k8s-proxy"]
 
 
 

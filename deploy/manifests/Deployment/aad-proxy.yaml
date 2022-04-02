@@ -29,6 +29,7 @@ spec:
           value: .djkormo.github.com
         image: djkormo/oauth2-k8s-proxy:main
         name: aad-proxy
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
           name: aad-proxy
