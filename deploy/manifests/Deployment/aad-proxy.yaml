@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
       - env:
-        - name: AAD_CLIENT_ID
+        - name: CLIENT_ID
           value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        - name: AAD_CLIENT_SECRET
+        - name: CLIENT_SECRET
           value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        - name: AAD_TENANT_ID
+        - name: TENANT_ID
           value: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-        - name: AAD_CALLBACK_URL
+        - name: CALLBACK_URL
           value: https://oauth2-k8s-proxy.djkormo.github.com/callback
-        - name: AAD_COOKIE_DOMAIN
+        - name: COOKIE_DOMAIN
           value: .djkormo.github.com
         image: djkormo/oauth2-k8s-proxy:main
         name: aad-proxy

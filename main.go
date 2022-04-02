@@ -17,45 +17,50 @@ import (
 )
 
 func main() {
-  clientId,ok := os.LookupEnv("AAD_CLIENT_ID")
+  clientId,ok := os.LookupEnv("CLIENT_ID")
 
   if !ok {
-    log.Println("AAD_CLIENT_ID is not present")
+	log.Fatal("CLIENT_ID is not set")
   } else {
-    log.Printf("AAD_CLIENT_ID: %v\n", clientId)
+    log.Printf("CLIENT_ID: %v\n", clientId)
   }
 
-  clientSecret, ok := os.LookupEnv("AAD_CLIENT_SECRET")
+  clientSecret, ok := os.LookupEnv("CLIENT_SECRET")
   if !ok {
-    log.Println("AAD_CLIENT_SECRET is not present")
+    log.Fatal("CLIENT_SECRET is not set")
   } else {
-    log.Printf("AAD_CLIENT_SECRET: %v\n", clientSecret)
+    log.Printf("CLIENT_SECRET: %v\n", clientSecret)
   }
 
-  tenantId,ok := os.LookupEnv("AAD_TENANT_ID")
+  tenantId,ok := os.LookupEnv("TENANT_ID")
   if !ok {
-    log.Println("AAD_TENANT_ID is not present")
+    log.Fatal("TENANT_ID is not present")
   } else {
-    log.Printf("AAD_TENANT_ID: %v\n", tenantId)
+    log.Printf("TENANT_ID: %v\n", tenantId)
   }
+
   callbackUrl,ok := os.LookupEnv("AAD_CALLBACK_URL")
   if !ok {
-    log.Println("AAD_CALLBACK_URL is not present")
+    log.Fatal("CALLBACK_URL is not present")
   } else {
-    log.Printf("AAD_CALLBACK_URL: %v\n", callbackUrl)
+    log.Printf("CALLBACK_URL: %v\n", callbackUrl)
   }
-  cookieDomain,ok := os.LookupEnv("AAD_COOKIE_DOMAIN")
+
+  cookieDomain,ok := os.LookupEnv("COOKIE_DOMAIN")
   if !ok {
-    log.Println("AAD_COOKIE_DOMAIN is not present")
+    log.Fatal("COOKIE_DOMAIN is not present")
   } else {
-    log.Printf("AAD_COOKIE_DOMAIN: %v\n", cookieDomain)
+    log.Printf("COOKIE_DOMAIN: %v\n", cookieDomain)
   }
 
 	ctx := context.Background()
+	// TODO make it more generic
+
 	issuser_uri:=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
 
 	provider, err := oidc.NewProvider(ctx, issuser_uri)
 	if err != nil {
+		log.Printf("NewProvider: " + issuser_uri)
 		log.Fatal(err)
 	}
 
@@ -65,6 +70,7 @@ func main() {
 		ClientSecret: clientSecret,
 		Endpoint:     provider.Endpoint(),
 		RedirectURL:  callbackUrl,
+		// TODO Scopes should be customized
 		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
