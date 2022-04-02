@@ -232,3 +232,4 @@ func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value, doma
 	}
 	http.SetCookie(w, c)
 }
+
