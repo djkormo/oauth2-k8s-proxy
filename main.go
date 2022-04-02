@@ -14,7 +14,6 @@ import (
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
-//	"github.com/alexliesenfeld/health"
 )
 
 func main() {
@@ -54,6 +53,14 @@ func main() {
 		log.Printf("COOKIE_DOMAIN: %v\n", cookieDomain)
 	}
 
+	port,ok := os.LookupEnv("LISTEN_PORT")
+	if !ok {
+
+		port="8080"
+	}
+    
+	log.Printf("LISTEN_PORT: %v\n", port)
+
 	ctx := context.Background()
 
 	// TODO make it more generic
@@ -78,8 +85,8 @@ func main() {
 
     //  for liveness probe in Kubernetes
 	http.HandleFunc("/healthz", healthz)
-    // TODO for readiness probe in Kubernetes
-   // http.HandleFunc("/readyz", readyz(isReady))
+    //  for readiness probe in Kubernetes
+    http.HandleFunc("/readyz", readyz)
 
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -246,7 +253,7 @@ func main() {
 	})
 
 	log.Println("listening on http://0.0.0.0:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s",port), nil))
 }
 
 type User struct {
@@ -280,14 +287,9 @@ func setCallbackCookie(w http.ResponseWriter, r *http.Request, name, value, doma
 func healthz(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
+func readyz(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(time.Duration((5)) * time.Second)
+	fmt.Fprintf(w, "ok")
+	}
 
-// readyz is a readiness probe.
-// func readyz(isReady *atomic.Value) http.HandlerFunc {
-//	return func(w http.ResponseWriter, _ *http.Request) {
-//		if isReady == nil || !isReady.Load().(bool) {
-//			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
-//			return
-//		}
-//		w.WriteHeader(http.StatusOK)
-//	}
-//}
+
