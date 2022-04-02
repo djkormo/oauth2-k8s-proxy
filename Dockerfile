@@ -38,13 +38,13 @@ ARG BUILDPLATFORM=linux/amd64
 #    printf "Building OAuth2 Proxy for arch ${GOARCH}\n" && \
 #    GOARCH=${GOARCH} VERSION=${VERSION} make build && touch jwt_signing_key.pem
 
-RUN make build
-
+#RUN make build
+RUN go build  -o oauth2-k8s-proxy
 # Copy binary to alpine
 FROM alpine:3.15
 COPY nsswitch.conf /etc/nsswitch.conf
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/oauth2-k8s-proxy /bin/oauth2-k8s-proxy
+COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy /bin/oauth2-k8s-proxy
 #COPY --from=builder /go/src/github.com/djkormo/oauth2-k8s-proxy/jwt_signing_key.pem /etc/ssl/private/jwt_signing_key.pem
 
 USER 2000:2000

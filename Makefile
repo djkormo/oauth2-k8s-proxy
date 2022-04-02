@@ -37,7 +37,8 @@ lint: validate-go-version
 build: validate-go-version clean $(BINARY)
 
 $(BINARY):
-	CGO_ENABLED=0 $(GO) build -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION}" -o $@ github.com/oauth2-proxy/oauth2-proxy/v7
+	CGO_ENABLED=0 $(GO) build -a -installsuffix cgo -ldflags="-X main.VERSION=${VERSION}" 
+#	-o $@ github.com/djkormo/oauth2-k8s-proxy/
 
 DOCKER_BUILD_PLATFORM ?= linux/amd64,linux/arm64,linux/ppc64le,linux/arm/v6
 DOCKER_BUILDX_ARGS ?=
