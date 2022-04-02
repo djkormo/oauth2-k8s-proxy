@@ -252,7 +252,7 @@ func main() {
 		http.Redirect(w, r, rd, http.StatusFound)
 	})
 
-	log.Println("listening on http://0.0.0.0:8080")
+	log.Println("listening on http://0.0.0.0"+port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s",port), nil))
 }
 
