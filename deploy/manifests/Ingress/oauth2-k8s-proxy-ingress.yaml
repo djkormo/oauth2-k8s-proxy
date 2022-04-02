@@ -4,7 +4,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-buffer-size: 8k
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-  name: aad-proxy
+  name: oauth2-k8s-proxy-ingress
   namespace: proxy
 spec:
   rules:
@@ -13,7 +13,7 @@ spec:
       paths:
       - backend:
           service:
-            name: aad-proxy
+            name: oauth2-k8s-proxy
             port:
               number: 80
         path: /

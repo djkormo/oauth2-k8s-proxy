@@ -11,14 +11,14 @@ on:
 
 jobs:
 
-#  validateKubernetesManifests:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: validate manifests in ./deploy directory
-#        uses: instrumenta/kubeval-action@master
-#        with:
-#          files: ./deploy
+  validateKubernetesManifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: validate manifests in ./deploy directory
+        uses: instrumenta/kubeval-action@master
+        with:
+          files: ./deploy
 
   buildDocker:
     runs-on: ubuntu-latest

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-k8s-proxy
+  namespace: proxy
+data:
+  CLIENT_ID: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  CLIENT_SECRET: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  TENANT_ID: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  CALLBACK_URL: "https://oauth2-k8s-proxy.djkormo.github.com/callback"
+  COOKIE_DOMAIN: ".djkormo.github.com"
+
+  

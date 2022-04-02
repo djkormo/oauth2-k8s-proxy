@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: aad-proxy
+  name: oauth2-k8s-proxy
   namespace: proxy
 spec:
   ports:
-  - name: aad-proxy
+  - name: oauth2-k8s-proxy
     port: 80
     protocol: TCP
     targetPort: 8080
   selector:
-    app: aad-proxy
+    app: oauth2-k8s-proxy
   type: ClusterIP

@@ -5,7 +5,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-cache-key: $cookie_id_token
     nginx.ingress.kubernetes.io/auth-signin: https://oauth2-k8s-proxy.djkormo.github.com/login
     nginx.ingress.kubernetes.io/auth-url: https://oauth2-k8s-proxy.djkormo.github.com/check
-  name: app1
+  name: app1-ingress
   namespace: proxy
 spec:
   rules:
