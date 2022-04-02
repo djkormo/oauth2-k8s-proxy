@@ -10,7 +10,15 @@ on:
       - 'Dockerfile'
 
 jobs:
-          
+
+#  validateKubernetesManifests:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: validate manifests in ./deploy directory
+#        uses: instrumenta/kubeval-action@master
+#        with:
+#          files: ./deploy
 
   buildDocker:
     runs-on: ubuntu-latest
@@ -21,7 +29,7 @@ jobs:
     - uses: actions/checkout@v2
       name: Checkout
       with:
-        ref: docker/metadata-action
+        ref: main
       
     - name: Docker meta
       id: meta
