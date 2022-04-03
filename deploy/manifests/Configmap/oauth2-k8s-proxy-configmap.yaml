@@ -4,10 +4,12 @@ metadata:
   name: oauth2-k8s-proxy
   namespace: proxy
 data:
-  CLIENT_ID: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  CLIENT_SECRET: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  TENANT_ID: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  CLIENT_ID: "ce9664fa-303a-4715-870d-fd92eef11cef"
+  CLIENT_SECRET: "c9b256ac-2d49-477d-a302-497d77a242d7"
+  TENANT_ID: "56afcc33-dd4f-4e9e-9c6c-fa3afa25913f"
   CALLBACK_URL: "https://oauth2-k8s-proxy.djkormo.github.com/callback"
   COOKIE_DOMAIN: ".djkormo.github.com"
+  LISTEN_PORT: "8080"
+  PROVIDER: "aad"
 
   

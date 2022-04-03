@@ -16,6 +16,19 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var (
+	providerType = os.Getenv("PROVIDER")
+	clientId     = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
+	tenantId = os.Getenv("TENANT_ID")
+	callbackUrl = os.Getenv("CALLBACK_URL")
+	cookieDomain = os.Getenv("COOKIE_DOMAIN")
+	port = os.Getenv("LISTEN_PORT")
+	verifier = *&oidc.IDTokenVerifier{}
+
+)
+
+
 
 type User struct {
 	// Id    string   `json:"sub"`
@@ -56,12 +69,25 @@ func readyzHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "ok")
 	}
 
+func parseEnvVariables() {
+
+// parse Env variables
+
+    providerType,ok := os.LookupEnv("PROVIDER")
+	if !ok {
+
+		providerType="aad"
+	}
  
-// proxy logic starts here
+	x, valid := providerType, map[string]struct{}{
+		"aad": {}, "oidc": {}, "adfs": {}, "google": {},
+	 }
+	 if _, ok := valid[x]; ok {
+		log.Printf("Valid PROVIDER: %v\n", providerType)
+	 } else {
+		log.Fatalf("INVALID PROVIDER %v, proper values are :%v\n", providerType,valid)
+	 } 
 
-func main() {
-
-	
 	clientId,ok := os.LookupEnv("CLIENT_ID")
 	if !ok {
 		log.Fatal("CLIENT_ID is not set")
@@ -102,22 +128,60 @@ func main() {
 
 		port="8080"
 	}
-    
+
 	log.Printf("LISTEN_PORT: %v\n", port)
 
+}
+
+ 
+// proxy logic starts here
+
+func main() {
+
+	parseEnvVariables()
+
 	ctx := context.Background()
+    
+	//provider, err := oidc.NewProvider(ctx, "https://accounts.google.com")
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+
+	//config := oauth2.Config{
+	//	ClientID:     clientID,
+	//	ClientSecret: clientSecret,
+	//	Endpoint:     provider.Endpoint(),
+	//	RedirectURL:  "http://127.0.0.1:5556/auth/google/callback",
+	//	Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+	//}
+
+
+	issuser_uri:=""
 
 	// TODO make it more generic
+    if providerType == "aad" {
+	  issuser_uri=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
+	} else if providerType == "adfs" {
+	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
 
-	issuser_uri:=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
-
+	} else if providerType == "oidc" {
+	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
+		
+	} else if providerType == "google" {
+	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
+		
+	} else {
+	  issuser_uri=fmt.Sprintf("%s", "")	
+	}
+	log.Printf("NewProvider for "+providerType+" with" + issuser_uri)
 	provider, err := oidc.NewProvider(ctx, issuser_uri)
 	if err != nil {
-		log.Printf("NewProvider: " + issuser_uri)
+		log.Printf("NewProvider for "+providerType+" with" + issuser_uri)
 		log.Fatal(err)
 	}
 
 	verifier := provider.Verifier(&oidc.Config{ClientID: clientId})
+
 	config := oauth2.Config{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
