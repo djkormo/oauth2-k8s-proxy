@@ -23,7 +23,9 @@ var (
 	tenantId = os.Getenv("TENANT_ID")
 	callbackUrl = os.Getenv("CALLBACK_URL")
 	cookieDomain = os.Getenv("COOKIE_DOMAIN")
+	issuerUrl= os.Getenv("ISSUER_URL") 
 	port = os.Getenv("LISTEN_PORT")
+	ctx context.Context
 	verifier = *&oidc.IDTokenVerifier{}
 
 )
@@ -162,18 +164,18 @@ func main() {
     if providerType == "aad" {
 	  issuser_uri=fmt.Sprintf("https://sts.windows.net/%s/", tenantId)
 	} else if providerType == "adfs" {
-	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
+	    issuser_uri=fmt.Sprintf("%s", issuerUrl)
 
 	} else if providerType == "oidc" {
-	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
+	    issuser_uri=fmt.Sprintf("%s", issuerUrl)
 		
 	} else if providerType == "google" {
 	    issuser_uri=fmt.Sprintf("https://accounts.google.com%s", "")
 		
 	} else {
-	  issuser_uri=fmt.Sprintf("%s", "")	
+	  issuser_uri=fmt.Sprintf("%s", issuerUrl)	
 	}
-	log.Printf("NewProvider for "+providerType+" with" + issuser_uri)
+	log.Printf("NewProvider for "+providerType+" with " + issuser_uri)
 	provider, err := oidc.NewProvider(ctx, issuser_uri)
 	if err != nil {
 		log.Printf("NewProvider for "+providerType+" with" + issuser_uri)
