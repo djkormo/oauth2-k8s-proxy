@@ -36,7 +36,7 @@ type User struct {
 	// Id    string   `json:"sub"`
 	Name  string   `json:"name"`
 	Email string   `json:"unique_name"` // unique_name, upn
-	Roles []string `json:"roles`
+	Roles []string `json:"roles"`
 }
 
 func randString(nByte int) (string, error) {
@@ -144,20 +144,6 @@ func main() {
 
 	ctx := context.Background()
     
-	//provider, err := oidc.NewProvider(ctx, "https://accounts.google.com")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	//config := oauth2.Config{
-	//	ClientID:     clientID,
-	//	ClientSecret: clientSecret,
-	//	Endpoint:     provider.Endpoint(),
-	//	RedirectURL:  "http://127.0.0.1:5556/auth/google/callback",
-	//	Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
-	//}
-
-
 	issuser_uri:=""
 
 	// TODO make it more generic
